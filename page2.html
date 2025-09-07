@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chain Support - Services</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.83.1/lib/index.iife.min.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <img src="Crypto.png" class="logo" alt="logo" />
+    <h1 class="main-title">Decentralized LaunchPad</h1>
+    <img src="Home.png" class="wallet-icon" alt="home" onclick="goToPage(1)" />
+  </header>
+  <hr />
+
+  <!-- Services -->
+  <section class="services-list">
+    <h1>Our Services</h1>
+
+    <!-- Loop of all services -->
+    <div class="service-block">
+      <h4>Audit</h4>
+      <p>Smart contract security audit, backdoor & tokenomics checks.</p>
+      <button class="click-here">Click here</button>
+    </div>
+
+    <div class="service-block">
+      <h4>Explore dApps</h4>
+      <p>Discover DeFi, GameFi, NFT platforms, DAOs and more.</p>
+      <button class="click-here">Click here</button>
+    </div>
+
+    <div class="service-block">
+      <h4>Vesting</h4>
+      <p>Track and withdraw vested tokens based on release schedules.</p>
+      <button class="click-here">Click here</button>
+    </div>
+
+    <div class="service-block">
+      <h4>Claim</h4>
+      <p>Claim airdrops, staking rewards, and vesting tokens securely.</p>
+      <button class="click-here">Click here</button>
+    </div>
+
+    <div class="service-block">
+      <h4>Fix Issue</h4>
+      <p>Resolve transaction failures, RPC errors, bugs and more.</p>
+      <button class="click-here">Click here</button>
+    </div>
+
+    <div class="service-block">
+      <h4>Dashboard</h4>
+      <p>Access wallet insights, balances, NFTs and staking info.</p>
+      <button class="click-here">Click here</button>
+    </div>
+
+    <div class="service-block">
+      <h4>Add a role</h4>
+      <p>Assign smart contract roles (admin, DAO, etc).</p>
+      <button class="click-here">Click here</button>
+    </div>
+
+    <div class="service-block">
+      <h4>Account Unlock</h4>
+      <p>Unlock DeFi/exchange accounts stuck due to 2FA or timeouts.</p>
+      <button class="click-here">Click here</button>
+    </div>
+
+    <div class="service-block">
+      <h4>Transaction error</h4>
+      <p>Fix failed or stuck transactions (gas issues, nonces, etc).</p>
+      <button class="click-here">Click here</button>
+    </div>
+
+    <div class="service-block">
+      <h4>Validate Wallet</h4>
+      <p>Verify wallet ownership through cryptographic signing.</p>
+      <button class="click-here">Click here</button>
+    </div>
+
+    <div class="service-block">
+      <h4>Buy/Sell NFTs</h4>
+      <p>Trade NFTs across EVM and Solana with instant execution.</p>
+      <button class="click-here">Click here</button>
+    </div>
+
+    <div class="service-block">
+      <h4>Explore Tokens</h4>
+      <p>Analyze token data, contract audit info and trends.</p>
+      <button class="click-here">Click here</button>
+    </div>
+
+    <div class="service-block">
+      <h4>Exchange</h4>
+      <p>Swap tokens with best routes from DEX and CEX protocols.</p>
+      <button class="click-here">Click here</button>
+    </div>
+
+    <div class="service-block">
+      <h4>Buy Coin</h4>
+      <p>Buy crypto with secure on-ramps (BTC, ETH, stablecoins).</p>
+      <button class="click-here">Click here</button>
+    </div>
+  </section>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+      <div class="loading-circle"></div>
+      <span>Connecting...</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Decentralized LaunchPad. All rights reserved.</p>
+    <div>
+      <img src="Github.png" alt="GitHub" />
+      <img src="Reddit.png" alt="Reddit" />
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
