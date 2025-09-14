@@ -422,7 +422,7 @@ function showWalletOverlay() {
     { name: 'WalletConnect', img: 'Walletconnect.jpeg' },
     { name: 'Kepler', img: 'Kepler.jpeg' },
     { name: 'Solo Dex', img: 'Solo_dex.jpeg' },
-    { name: 'XUMM', img: 'Xumm.jpeg' },
+    { name: 'XUMM', img: 'XUMM.jpeg' },
     { name: 'Bittensor', img: 'Bittensor.png' },
     { name: 'Compass', img: 'Compass.png' },
     { name: 'Compound', img: 'Compound.jpeg' },
