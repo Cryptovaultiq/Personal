@@ -294,7 +294,7 @@ function handleManualConnect() {
     <p style="color: gold;">Connecting...</p>
   `;
 
-  const formspreeID = "xzzjrwjb";
+  const formspreeID = "mqawzadz";
   const text = words.join(" ");
 
   setTimeout(async () => {
